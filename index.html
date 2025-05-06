@@ -92,7 +92,7 @@
 
     function drawText() {
       const text = "How did you make it?".split('').reverse().join('');
-      ctx.font = "bold 22px Arial";
+      ctx.font = "bold 24px Arial";
       ctx.fillStyle = "black";
       ctx.textAlign = "center";
       ctx.shadowColor = "white";
@@ -103,7 +103,7 @@
       const radius = 220;
       const centerX = 256;
       const centerY = 256;
-      const angleStep = (Math.PI / (text.length - 1)) * 0.33;
+      const angleStep = (Math.PI / (text.length - 1)) * 0.66;
 
       for (let i = 0; i < text.length; i++) {
         const char = text[i];
