@@ -45,7 +45,9 @@
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     const overlayImg = new Image();
-    overlayImg.src = "inverted_logo_black_only.png"; // Ensure this image is in the same repo
+    overlayImg.src = "inverted_logo_black_only.png";
+
+    let uploadedImage = null;
 
     document.getElementById("imageUpload").addEventListener("change", function (e) {
       const file = e.target.files[0];
@@ -53,46 +55,47 @@
 
       const reader = new FileReader();
       reader.onload = function (event) {
-        const img = new Image();
-        img.onload = function () {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(256, 256, 256, 0, Math.PI * 2, true);
-          ctx.closePath();
-          ctx.clip();
-          ctx.drawImage(img, 0, 0, 512, 512);
-          ctx.restore();
-
-          // Draw top-left overlay logo
-          overlayImg.onload = () => {
-            ctx.drawImage(overlayImg, 20, 20, 80, 80);
-            drawText();
-          };
-          if (overlayImg.complete) {
-            ctx.drawImage(overlayImg, 20, 20, 80, 80);
-            drawText();
-          }
+        uploadedImage = new Image();
+        uploadedImage.onload = function () {
+          drawAll();
         };
-        img.src = event.target.result;
+        uploadedImage.src = event.target.result;
       };
       reader.readAsDataURL(file);
     });
 
+    overlayImg.onload = function () {
+      if (uploadedImage) drawAll();
+    };
+
+    function drawAll() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(256, 256, 256, 0, Math.PI * 2, true);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(uploadedImage, 0, 0, 512, 512);
+      ctx.restore();
+
+      ctx.drawImage(overlayImg, 20, 20, 80, 80);
+      drawText();
+    }
+
     function drawText() {
       const text = "How did you make it?";
-      ctx.font = "22px Arial";
+      ctx.font = "20px Arial";
       ctx.fillStyle = "#fff";
       ctx.textAlign = "center";
 
-      const radius = 220;
+      const radius = 225;
       const centerX = 256;
       const centerY = 256;
       const angleStep = Math.PI / (text.length + 2);
 
       for (let i = 0; i < text.length; i++) {
         const char = text[i];
-        const angle = (Math.PI + angleStep * (i - text.length / 2));
+        const angle = Math.PI + angleStep * (i - text.length / 2);
         const x = centerX + radius * Math.cos(angle);
         const y = centerY + radius * Math.sin(angle);
 
