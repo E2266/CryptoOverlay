@@ -63,9 +63,7 @@
       reader.onload = function (event) {
         uploadedImage = new Image();
         uploadedImage.onload = function () {
-          if (overlayReady) {
-            drawAll();
-          }
+          drawAll();
         };
         uploadedImage.src = event.target.result;
       };
