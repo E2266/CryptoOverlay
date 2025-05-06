@@ -48,6 +48,12 @@
     overlayImg.src = "inverted_logo_black_only.png";
 
     let uploadedImage = null;
+    let overlayReady = false;
+
+    overlayImg.onload = function () {
+      overlayReady = true;
+      if (uploadedImage) drawAll();
+    };
 
     document.getElementById("imageUpload").addEventListener("change", function (e) {
       const file = e.target.files[0];
@@ -57,16 +63,14 @@
       reader.onload = function (event) {
         uploadedImage = new Image();
         uploadedImage.onload = function () {
-          drawAll();
+          if (overlayReady) {
+            drawAll();
+          }
         };
         uploadedImage.src = event.target.result;
       };
       reader.readAsDataURL(file);
     });
-
-    overlayImg.onload = function () {
-      if (uploadedImage) drawAll();
-    };
 
     function drawAll() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -78,7 +82,9 @@
       ctx.drawImage(uploadedImage, 0, 0, 512, 512);
       ctx.restore();
 
+      // Ensure overlay is drawn AFTER image is clipped
       ctx.drawImage(overlayImg, 20, 20, 80, 80);
+
       drawText();
     }
 
@@ -88,14 +94,14 @@
       ctx.fillStyle = "#fff";
       ctx.textAlign = "center";
 
-      const radius = 225;
+      const radius = 220;
       const centerX = 256;
       const centerY = 256;
-      const angleStep = Math.PI / (text.length + 2);
+      const angleStep = Math.PI / (text.length + 1);
 
       for (let i = 0; i < text.length; i++) {
         const char = text[i];
-        const angle = Math.PI + angleStep * (i - text.length / 2);
+        const angle = Math.PI + angleStep * (i - (text.length - 1) / 2);
         const x = centerX + radius * Math.cos(angle);
         const y = centerY + radius * Math.sin(angle);
 
