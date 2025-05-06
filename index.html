@@ -80,11 +80,10 @@
       ctx.drawImage(uploadedImage, 0, 0, 512, 512);
       ctx.restore();
 
-      // Adjust logo to fit inside circular frame in top-right
+      // Adjust logo to fit inside circular frame in top-left, slightly inward and downward
       const logoSize = 72;
-      const logoMargin = 16;
-      const logoX = canvas.width - logoSize - logoMargin;
-      const logoY = logoMargin;
+      const logoX = 32; // more centered horizontally
+      const logoY = 40; // moved slightly downward
       ctx.drawImage(overlayImg, logoX, logoY, logoSize, logoSize);
 
       drawText();
@@ -128,3 +127,4 @@
   </script>
 </body>
 </html>
+
