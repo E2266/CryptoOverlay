@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>X Profile Overlay Generator</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    canvas {
+      border-radius: 50%;
+      background-color: #000;
+    }
+    #downloadBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    input[type="file"] {
+      margin-bottom: 20px;
+    }
+    .banner {
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <img src="banner.png" alt="Banner" class="banner" />
+  <h1>$CRYPTO X Profile Overlay</h1>
+  <input type="file" id="imageUpload" accept="image/*" />
+  <canvas id="canvas" width="512" height="512"></canvas>
+  <button id="downloadBtn">Download Image</button>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const overlayImg = new Image();
+    overlayImg.src = "inverted_logo_black_only.png"; // Ensure this image is in the same repo
+
+    document.getElementById("imageUpload").addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        const img = new Image();
+        img.onload = function () {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(256, 256, 256, 0, Math.PI * 2, true);
+          ctx.closePath();
+          ctx.clip();
+          ctx.drawImage(img, 0, 0, 512, 512);
+          ctx.restore();
+
+          // Draw top-left overlay logo
+          overlayImg.onload = () => {
+            ctx.drawImage(overlayImg, 20, 20, 80, 80);
+            drawText();
+          };
+          if (overlayImg.complete) {
+            ctx.drawImage(overlayImg, 20, 20, 80, 80);
+            drawText();
+          }
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function drawText() {
+      const text = "How did you make it?";
+      ctx.font = "22px Arial";
+      ctx.fillStyle = "#fff";
+      ctx.textAlign = "center";
+
+      const radius = 220;
+      const centerX = 256;
+      const centerY = 256;
+      const angleStep = Math.PI / (text.length + 2);
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const angle = (Math.PI + angleStep * (i - text.length / 2));
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
+
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle + Math.PI / 2);
+        ctx.fillText(char, 0, 0);
+        ctx.restore();
+      }
+    }
+
+    document.getElementById("downloadBtn").addEventListener("click", function () {
+      const link = document.createElement("a");
+      link.download = "profile_with_overlay.png";
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  </script>
+</body>
+</html>
