@@ -45,7 +45,7 @@
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     const overlayImg = new Image();
-    overlayImg.src = "inverted_logo_black_only.png";
+    overlayImg.src = "logo.png";
 
     let uploadedImage = null;
     let overlayReady = false;
@@ -82,8 +82,12 @@
       ctx.drawImage(uploadedImage, 0, 0, 512, 512);
       ctx.restore();
 
-      // Ensure overlay is drawn AFTER image is clipped
-      ctx.drawImage(overlayImg, 20, 20, 80, 80);
+      // Adjust logo to fit inside circular frame in top-right
+      const logoSize = 64;
+      const logoMargin = 20;
+      const logoX = canvas.width - logoSize - logoMargin; // move inward from right edge
+      const logoY = logoMargin; // downward from top
+      ctx.drawImage(overlayImg, logoX, logoY, logoSize, logoSize);
 
       drawText();
     }
@@ -94,7 +98,7 @@
       ctx.fillStyle = "#fff";
       ctx.textAlign = "center";
 
-      const radius = 220;
+      const radius = 210;
       const centerX = 256;
       const centerY = 256;
       const angleStep = Math.PI / (text.length + 1);
